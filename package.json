@@ -1,0 +1,17 @@
+{
+  "name": "backend-ferremarket-royal",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000B\u0000A\u0000C\u0000K\u0000E\u0000N\u0000D\u0000-\u0000F\u0000E\u0000R\u0000R\u0000E\u0000M\u0000A\u0000R\u0000K\u0000E\u0000T\u0000-\u0000R\u0000O\u0000Y\u0000A\u0000L\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "mysql": "^2.18.1"
+  }
+}
