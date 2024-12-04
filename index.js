@@ -3,7 +3,7 @@ const cors = require('cors');
 
 const productosRoutes = require('./db/productos');
 const comprasRoutes = require('./db/compras');
-const detalleComprasRoutes = require('./db/detalleCompras');
+const detalleComprasRoutes = require('./db/detallecompras.js');
 const detalleVentasRoutes = require('./db/detalleVentas');
 const proveedoresRoutes = require('./db/proveedores');
 const rolRoutes = require('./db/rol');
