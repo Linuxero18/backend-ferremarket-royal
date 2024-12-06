@@ -3,15 +3,42 @@ const bcrypt = require('bcrypt');
 const db = require('./connection');
 const router = express.Router();
 
-router.get('/', (req, res) => {
-    db.query('SELECT * FROM usuarios', (err, rows) => {
-        if(err) {
-            console.log('Error al obtener los usuarios' + err);
-        }
-        res.json(rows);
-    });
-});
+const conPromise = db.promise();
 
+//Endpoint para obtener todos los usuarios
+router.get('/data', async (req, res) => {
+    try {
+      const [rows] = await conPromise.query(`
+        SELECT 
+          usuarios.id_usuario, 
+          usuarios.nombre_usuario, 
+          usuarios.email, 
+          usuarios.password, 
+          rol.nombre_rol
+        FROM 
+          usuarios
+        INNER JOIN 
+          rol 
+        ON 
+          usuarios.id_rol = rol.id_rol
+      `);
+      res.json(rows);
+    } catch (error) {
+      res.status(500).json({ message: "Error al obtener los usuarios" });
+    }
+  });
+
+
+
+
+
+
+
+
+
+
+
+//Endpoint para registrar un nuevo usuario
 router.post('/', async (req, res) => {
     const { nombre_usuario, email, password, id_rol = 1 } = req.body;
 
@@ -43,7 +70,7 @@ router.post('/', async (req, res) => {
         res.status(500).json({ message: 'Error en el servidor' });
     }
 });
-
+//Endpoint para iniciar sesión
 router.post('/login', async (req, res) => {
     const { nombre_usuario, password } = req.body;
 
