@@ -1,64 +1,88 @@
 const db = require('../config/connection');
 
-// Obtener todos los productos
-const obtenerProductos = () => {
+// Obtener todos los productos con detalles de categoría y proveedor
+const getAllProducts = () => {
+    const query = `
+        SELECT 
+            productos.id_producto,
+            productos.nombre,
+            productos.descripcion,
+            categorias.nombre_categoria AS categoria,
+            productos.precio_unitario,
+            productos.stock_actual,
+            productos.stock_minimo,
+            proveedores.nombre_proveedor AS proveedor
+        FROM 
+            productos
+        LEFT JOIN 
+            categorias ON productos.id_categoria = categorias.id_categoria
+        LEFT JOIN 
+            proveedores ON productos.id_proveedor = proveedores.id_proveedor
+        ORDER BY productos.id_producto ASC;
+    `;
+
     return new Promise((resolve, reject) => {
-        const query = `
-            SELECT 
-                productos.id_producto,
-                productos.nombre,
-                productos.descripcion,
-                categorias.nombre_categoria,
-                productos.precio_unitario,
-                productos.stock_actual,
-                productos.stock_minimo,
-                proveedores.nombre_proveedor
-            FROM 
-                productos
-            INNER JOIN 
-                categorias ON productos.id_categoria = categorias.id_categoria
-            INNER JOIN 
-                proveedores ON productos.id_proveedor = proveedores.id_proveedor
-            ORDER BY productos.id_producto ASC;
-        `;
-        
         db.query(query, (err, rows) => {
             if (err) {
-                reject('Error al obtener los productos: ' + err);
+                reject(`Error al obtener los productos: ${err}`);
             } else {
+                console.log(rows);
                 resolve(rows);
             }
         });
     });
 };
 
-
 // Obtener un producto por ID
-const obtenerProductoPorId = (id) => {
+const getProductById = (id) => {
+    const query = `
+        SELECT 
+            productos.id_producto,
+            productos.nombre,
+            productos.descripcion,
+            categorias.nombre_categoria AS categoria,
+            productos.precio_unitario,
+            productos.stock_actual,
+            productos.stock_minimo,
+            proveedores.nombre_proveedor AS proveedor
+        FROM 
+            productos
+        LEFT JOIN 
+            categorias ON productos.id_categoria = categorias.id_categoria
+        LEFT JOIN 
+            proveedores ON productos.id_proveedor = proveedores.id_proveedor
+        WHERE productos.id_producto = ?;
+    `;
+
     return new Promise((resolve, reject) => {
-        db.query('SELECT * FROM productos WHERE id_producto = ?', [id], (err, rows) => {
+        db.query(query, [id], (err, rows) => {
             if (err) {
-                reject('Error al obtener el producto: ' + err);
+                reject(`Error al obtener el producto: ${err}`);
+            } else if (rows.length === 0) {
+                resolve(null); // Producto no encontrado
             } else {
-                resolve(rows);
+                resolve(rows[0]);
             }
         });
     });
 };
 
 // Insertar un producto
-const insertarProducto = (producto) => {
+const addProduct = (producto) => {
     const { nombre, descripcion, id_categoria, precio_unitario, stock_actual, stock_minimo, id_proveedor } = producto;
+    console.log(id_categoria);
+    console.log(producto);
+
     const query = `
         INSERT INTO productos (nombre, descripcion, id_categoria, precio_unitario, stock_actual, stock_minimo, id_proveedor)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?);
     `;
     const values = [nombre, descripcion, id_categoria, precio_unitario, stock_actual, stock_minimo, id_proveedor];
 
     return new Promise((resolve, reject) => {
         db.query(query, values, (err, result) => {
             if (err) {
-                reject('Error al insertar el producto: ' + err);
+                reject(`Error al insertar el producto: ${err}`);
             } else {
                 resolve(result.insertId);
             }
@@ -67,19 +91,19 @@ const insertarProducto = (producto) => {
 };
 
 // Actualizar un producto
-const actualizarProducto = (id, producto) => {
-    const { nombre, descripcion, categoria, precio_unitario, stock_actual, stock_minimo, id_proveedor} = producto;
+const updateProduct = (id, producto) => {
+    const { nombre, descripcion, id_categoria, precio_unitario, stock_actual, stock_minimo, id_proveedor } = producto;
     const query = `
         UPDATE productos
         SET nombre = ?, descripcion = ?, id_categoria = ?, precio_unitario = ?, stock_actual = ?, stock_minimo = ?, id_proveedor = ?
-        WHERE id_producto = ?
+        WHERE id_producto = ?;
     `;
-    const values = [nombre, descripcion, categoria, precio_unitario, stock_actual, stock_minimo, id_proveedor, id];
+    const values = [nombre, descripcion, id_categoria, precio_unitario, stock_actual, stock_minimo, id_proveedor, id];
 
     return new Promise((resolve, reject) => {
         db.query(query, values, (err, result) => {
             if (err) {
-                reject('Error al actualizar el producto: ' + err);
+                reject(`Error al actualizar el producto: ${err}`);
             } else {
                 resolve(result);
             }
@@ -88,11 +112,13 @@ const actualizarProducto = (id, producto) => {
 };
 
 // Eliminar un producto
-const eliminarProducto = (id) => {
+const deleteProduct = (id) => {
+    const query = 'DELETE FROM productos WHERE id_producto = ?';
+
     return new Promise((resolve, reject) => {
-        db.query('DELETE FROM productos WHERE id_producto = ?', [id], (err, result) => {
+        db.query(query, [id], (err, result) => {
             if (err) {
-                reject('Error al eliminar el producto: ' + err);
+                reject(`Error al eliminar el producto: ${err}`);
             } else {
                 resolve(result);
             }
@@ -101,9 +127,9 @@ const eliminarProducto = (id) => {
 };
 
 module.exports = {
-    obtenerProductos,
-    obtenerProductoPorId,
-    insertarProducto,
-    actualizarProducto,
-    eliminarProducto
+    getAllProducts,
+    getProductById,
+    addProduct,
+    updateProduct,
+    deleteProduct
 };

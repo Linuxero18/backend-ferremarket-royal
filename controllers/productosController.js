@@ -1,9 +1,9 @@
-const productosModel = require('../models/productosModel');
+const { getAllProducts, getProductById, addProduct, updateProduct, deleteProduct  } = require('../models/productosModel');
 
 // Obtener todos los productos
-const obtenerProductos = async (req, res) => {
+const getAllProductsController = async (req, res) => {
     try {
-        const productos = await productosModel.obtenerProductos();
+        const productos = await getAllProducts();
         res.json(productos);
     } catch (err) {
         console.error(err);
@@ -12,14 +12,14 @@ const obtenerProductos = async (req, res) => {
 };
 
 // Obtener un producto por ID
-const obtenerProductoPorId = async (req, res) => {
+const getProductByIdController = async (req, res) => {
     const { id } = req.params;
     try {
-        const producto = await productosModel.obtenerProductoPorId(id);
-        if (producto.length === 0) {
+        const producto = await getProductById(id);
+        if (!producto) {
             return res.status(404).json({ status: 'Error', message: 'Producto no encontrado' });
         }
-        res.json(producto[0]);
+        res.json(producto);
     } catch (err) {
         console.error(err);
         res.status(500).json({ status: 'Error', message: 'Error al obtener el producto' });
@@ -27,17 +27,17 @@ const obtenerProductoPorId = async (req, res) => {
 };
 
 // Insertar un nuevo producto
-const insertarProducto = async (req, res) => {
-    const { nombre, descripcion, categoria, precio_unitario, stock_actual, stock_minimo, id_proveedor } = req.body;
-    const ultima_modificacion = new Date();
+const addProductController = async (req, res) => {
+    const { nombre, descripcion, id_categoria, precio_unitario, stock_actual, stock_minimo, id_proveedor } = req.body;
 
-    if (!nombre || !descripcion || !categoria || !precio_unitario || !stock_actual || !stock_minimo || !id_proveedor) {
-        return res.status(400).json({ status: 'Error', message: 'Todos los campos son requeridos.' });
+    // Validar campos requeridos
+    if (!nombre || !precio_unitario || !stock_actual || !stock_minimo) {
+        return res.status(400).json({ status: 'Error', message: 'Los campos obligatorios son requeridos.' });
     }
 
-    const producto = { nombre, descripcion, categoria, precio_unitario, stock_actual, stock_minimo, id_proveedor, ultima_modificacion };
+    const producto = { nombre, descripcion, id_categoria, precio_unitario, stock_actual, stock_minimo, id_proveedor};
     try {
-        const insertId = await productosModel.insertarProducto(producto);
+        const insertId = await addProduct(producto);
         res.status(201).json({ status: 'Éxito', message: 'Producto insertado correctamente', id_producto: insertId });
     } catch (err) {
         console.error(err);
@@ -46,18 +46,19 @@ const insertarProducto = async (req, res) => {
 };
 
 // Actualizar un producto
-const actualizarProducto = async (req, res) => {
+const updateProductController = async (req, res) => {
     const { id } = req.params;
-    const { nombre, descripcion, categoria, precio_unitario, stock_actual, stock_minimo, id_proveedor } = req.body;
+    const { nombre, descripcion, id_categoria, precio_unitario, stock_actual, stock_minimo, id_proveedor } = req.body;
     const ultima_modificacion = new Date();
 
-    if (!nombre || !descripcion || !categoria || !precio_unitario || !stock_actual || !stock_minimo || !id_proveedor) {
-        return res.status(400).json({ status: 'Error', message: 'Todos los campos son requeridos.' });
+    // Validar campos requeridos
+    if (!nombre || !precio_unitario || !stock_actual || !stock_minimo) {
+        return res.status(400).json({ status: 'Error', message: 'Los campos obligatorios son requeridos.' });
     }
 
-    const producto = { nombre, descripcion, categoria, precio_unitario, stock_actual, stock_minimo, id_proveedor, ultima_modificacion };
+    const producto = { nombre, descripcion, id_categoria, precio_unitario, stock_actual, stock_minimo, id_proveedor, ultima_modificacion };
     try {
-        const result = await productosModel.actualizarProducto(id, producto);
+        const result = await updateProduct(id, producto);
         if (result.affectedRows === 0) {
             return res.status(404).json({ status: 'Error', message: 'Producto no encontrado' });
         }
@@ -69,14 +70,14 @@ const actualizarProducto = async (req, res) => {
 };
 
 // Eliminar un producto
-const eliminarProducto = async (req, res) => {
+const deleteProductController = async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await productosModel.eliminarProducto(id);
+        const result = await deleteProduct(id);
         if (result.affectedRows === 0) {
             return res.status(404).json({ status: 'Error', message: 'Producto no encontrado' });
         }
-        res.json({ message: 'Producto eliminado exitosamente' });
+        res.json({ status: 'Éxito', message: 'Producto eliminado exitosamente' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ status: 'Error', message: 'Error al eliminar el producto' });
@@ -84,9 +85,9 @@ const eliminarProducto = async (req, res) => {
 };
 
 module.exports = {
-    obtenerProductos,
-    obtenerProductoPorId,
-    insertarProducto,
-    actualizarProducto,
-    eliminarProducto
+    getAllProductsController,
+    getProductByIdController,
+    addProductController,
+    updateProductController,
+    deleteProductController
 };
