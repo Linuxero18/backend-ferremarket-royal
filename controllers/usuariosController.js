@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const db = require('../config/connection');
-const { getAllUsers, getUserByUsername, registerUser } = require('../models/usuariosModel');
+const { getAllUsers, getUserById, deleteUserById, updateUserById, getUserByUsername, registerUser } = require('../models/usuariosModel');
 
 // Controlador para obtener todos los usuarios
 const getAllUsersController = async (req, res) => {
@@ -11,6 +11,56 @@ const getAllUsersController = async (req, res) => {
         res.status(500).json({ message: "Error al obtener los usuarios" });
     }
 };
+
+// Controlador para obtener un usuario por ID
+const getUserByIdController = async (req, res) => {
+    const { id_usuario } = req.params;
+
+    try {
+        const user = await getUserById(id_usuario);
+        if (!user) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener el usuario' });
+    }
+}
+
+
+// Controlador para eliminar un usuario
+const deleteUserController = async (req, res) => {
+    const { id_usuario } = req.params;
+
+    try {
+        await deleteUserById(id_usuario);
+        res.status(200).json({ message: 'Usuario eliminado correctamente' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al eliminar el usuario' });
+    }
+};
+
+const updateUserController = async (req, res) => {
+    const { id_usuario } = req.params;
+    const { nombre_usuario, email, id_rol, password } = req.body;
+    console.log("Datos recibidos en el servidor:", req.body);  // Verifica los datos recibidos
+  
+    try {
+      // Validar campos obligatorios
+      if (!nombre_usuario || !email || !id_rol) {
+        return res.status(400).json({ message: 'Todos los campos son requeridos (nombre_usuario, email, id_rol)' });
+      }
+  
+      // Llamar a la función para actualizar el usuario, pasando la contraseña si está presente
+      await updateUserById(id_usuario, nombre_usuario, email, id_rol, password);
+  
+      res.status(200).json({ message: 'Usuario actualizado correctamente' });
+    } catch (error) {
+      console.error('Error al actualizar el usuario:', error);
+      res.status(500).json({ message: 'Error al actualizar el usuario' });
+    }
+  };
+  
 
 // Controlador para registrar un nuevo usuario
 const registerUserController = async (req, res) => {
@@ -60,4 +110,4 @@ const loginController = async (req, res) => {
     }
 };
 
-module.exports = { getAllUsersController, registerUserController, loginController };
+module.exports = { getAllUsersController, getUserByIdController, registerUserController, loginController, deleteUserController, updateUserController };

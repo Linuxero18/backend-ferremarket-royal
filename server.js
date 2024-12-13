@@ -4,7 +4,7 @@ const { port } = require('./config/env');
 
 db.connect((err) => {
     if (err) {
-        console.error('¡ADVERTENCIA!: Base de datos posiblemene apagada, se ha podido establecer conexión.');
+        console.error('¡ADVERTENCIA!: Base de datos posiblemene apagada, no se ha podido establecer conexión.');
         console.log();
         process.exit(1);
     } else {
