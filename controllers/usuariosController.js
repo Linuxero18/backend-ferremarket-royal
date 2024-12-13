@@ -40,24 +40,27 @@ const deleteUserController = async (req, res) => {
     }
 };
 
-
-// Controlador para actualizar un usuario
 const updateUserController = async (req, res) => {
     const { id_usuario } = req.params;
-    const { nombre_usuario, email, id_rol } = req.body;
-    console.log(req.body);
+    const { nombre_usuario, email, id_rol, password } = req.body;
+    console.log("Datos recibidos en el servidor:", req.body);  // Verifica los datos recibidos
+  
     try {
-        // Validar campos
-        if (!nombre_usuario || !email || !id_rol) {
-            return res.status(400).json({ message: 'Todos los campos son requeridos (nombre_usuario, email, id_rol)' });
-        }       
-
-        await updateUserById(id_usuario, nombre_usuario, email, id_rol);
-        res.status(200).json({ message: 'Usuario actualizado correctamente' });
+      // Validar campos obligatorios
+      if (!nombre_usuario || !email || !id_rol) {
+        return res.status(400).json({ message: 'Todos los campos son requeridos (nombre_usuario, email, id_rol)' });
+      }
+  
+      // Llamar a la función para actualizar el usuario, pasando la contraseña si está presente
+      await updateUserById(id_usuario, nombre_usuario, email, id_rol, password);
+  
+      res.status(200).json({ message: 'Usuario actualizado correctamente' });
     } catch (error) {
-        res.status(500).json({ message: 'Error al actualizar el usuario' });
+      console.error('Error al actualizar el usuario:', error);
+      res.status(500).json({ message: 'Error al actualizar el usuario' });
     }
-};
+  };
+  
 
 // Controlador para registrar un nuevo usuario
 const registerUserController = async (req, res) => {
