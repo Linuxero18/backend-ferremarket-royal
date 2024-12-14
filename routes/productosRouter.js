@@ -6,7 +6,7 @@ const router = express.Router();
 router.get('/', productosController.getAllProductsController);
 
 // Obtener productos por ID de categoría
-router.get('/categoria/:id', productosController.getProductsByCategoryController); 
+//router.get('/categoria/:id', productosController.getProductByIdController); 
 
 // Obtener un producto por ID
 router.get('/:id', productosController.getProductByIdController);

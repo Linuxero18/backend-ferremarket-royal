@@ -12,6 +12,14 @@ const getSupplierById = async (id_proveedor) => {
     return rows[0];  // Retorna el primer resultado (el usuario)
 };
 
+// Modelo para agregar un nuevo proveedor
+const addSupplier = async (proveedor) => {
+    const { nombre_proveedor, contacto, telefono } = proveedor;
+    const query = 'INSERT INTO proveedores (nombre_proveedor, contacto, telefono) VALUES (?, ?, ?)';
+    const values = [nombre_proveedor, contacto, telefono];
+    await db.promise().query(query, values);
+};
+
 // Modelo para eliminar un usuario por ID
 const deleteSupplierById = async (id_usuario) => {
     const query = 'DELETE FROM proveedores WHERE id_proveedor = ?';
@@ -28,4 +36,4 @@ const updateSupplierById = async (id_usuario, nombre_usuario, email, id_rol) => 
     await db.promise().query(query, [nombre_usuario, email, id_rol, id_usuario]);
 };
 
-module.exports = { getAllSuppliers, getSupplierById, deleteSupplierById, updateSupplierById };
+module.exports = { getAllSuppliers, getSupplierById, addSupplier,deleteSupplierById, updateSupplierById };

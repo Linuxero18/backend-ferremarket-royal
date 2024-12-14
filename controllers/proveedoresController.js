@@ -1,5 +1,5 @@
 // controllers/categoriasController.js
-const { getAllSuppliers, getSupplierById, deleteSupplierById, updateSupplierById } = require('../models/proveedoresModel'); // Asegúrate de importar correctamente
+const { getAllSuppliers, getSupplierById, addSupplier, deleteSupplierById, updateSupplierById } = require('../models/proveedoresModel'); // Asegúrate de importar correctamente
 
 // Controlador para obtener todas las proveedores
 const getAllSuppliersController = async (req, res) => {
@@ -26,6 +26,23 @@ const getSupplierByIdController = async (req, res) => {
         console.error(error);
     }
 }
+
+// Controlador para agregar un nuevo usuario
+const addSupplierController = async (req, res) => {
+    const { nombre_proveedor, contacto, telefono } = req.body;
+
+    // Validar campos
+    if (!nombre_proveedor || !contacto || !telefono) {
+        return res.status(400).json({ message: 'Todos los campos son requeridos (nombre_proveedor, contacto, telefono)' });
+    }
+
+    try {
+        await addSupplier({ nombre_proveedor, contacto, telefono });
+        res.status(201).json({ message: 'Proveedor agregado correctamente' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al agregar el proveedor' });
+    }
+};
 
 // Controlador para eliminar un usuario
 const deleteSupplierController = async (req, res) => {
@@ -57,4 +74,4 @@ const updateSupplierController = async (req, res) => {
     }
 };
 
-module.exports = { getAllSuppliersController, getSupplierByIdController, deleteSupplierController, updateSupplierController };
+module.exports = { getAllSuppliersController, getSupplierByIdController, addSupplierController , deleteSupplierController, updateSupplierController };

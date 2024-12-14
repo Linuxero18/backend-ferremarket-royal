@@ -9,6 +9,9 @@ router.get('/', proveedoresController.getAllSuppliersController);
 // Ruta para obtener un proveedor por ID
 router.get('/:id_proveedor', proveedoresController.getSupplierByIdController);
 
+// Ruta para agregar un nuevo proveedor
+router.post('/', proveedoresController.addSupplierController);
+
 // Ruta para eliminar un proveedor por ID
 router.delete('/:id_proveedor', proveedoresController.deleteSupplierController);
 
