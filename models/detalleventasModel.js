@@ -24,7 +24,17 @@ const getSaleDetailById = async (id_detalleventa) => {
 
 // Modelo para obtener un detalle de venta por id_venta
 const getSaleDetailBySaleId = async (id_venta) => {
-    const [rows] = await db.promise().query('SELECT * FROM detalleventas WHERE id_venta = ?', [id_venta]);
+    const [rows] = await db.promise().query(`
+        SELECT dv.id_detalleventa,
+            dv.id_venta,
+            p.id_producto,
+            p.nombre,
+            dv.cantidad,
+            dv.precio_unitario
+        FROM detalleventas dv
+        INNER JOIN productos p ON dv.id_producto = p.id_producto
+        WHERE id_venta = ?
+        ORDER BY id_venta ASC`, [id_venta]);
     return rows;  // Retorna el detalle de venta
 };
 

@@ -6,7 +6,7 @@ const router = express.Router();
 router.get('/', ventasController.getAllSalesController);
 
 // Ruta para obtener una venta por ID
-router.get('//detalleventas/venta/:id_venta', ventasController.getSaleByIdController);
+router.get('/detalleventas/venta/:id_venta', ventasController.getSaleByIdController);
 
 // Ruta para agregar una venta
 router.post('/', ventasController.addSaleController);
